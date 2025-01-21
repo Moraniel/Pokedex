@@ -4,7 +4,7 @@ const loadButton = document.getElementById("loadButton")
 
 
 // Limite de pokemon carregados por página
-const limit = 150
+const limit = 10
 
 // ID inicial do pokemon
 let offset = 0;
