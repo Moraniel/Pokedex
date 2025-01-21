@@ -1,42 +1,56 @@
 
-
-
-
-
 const pokemonList = document.getElementById("pokemonList")
+const loadButton = document.getElementById("loadButton")
+
+
+// Limite de pokemon carregados por página
+const limit = 150
+
+// ID inicial do pokemon
+let offset = 0;
+
+// Determina a quantidade de pokemon que serão carregados
+const maxRecords = 151
 
 
 
 
+  
+function loadPokemonItems(offset, limit) {
+    PokeAPI.getPokemons(offset, limit).then( (pokemons = [])=>{
+        const newHtml = pokemons.map((pokemon)=>
+            `
+            <li class="pokemon ${pokemon.type}">
+                <span class ="number">#${pokemon.id}</span>
+                <span class ="name">${pokemon.name}</span>
 
+                <div class="detail">
+                    <ol class="types">
+                        ${pokemon.types.map((type)=> `<li class="type ${type}">${type}</li>`).join('')}
+                    </ol>
+                    <img src=${pokemon.sprite}
+                    // alt="${pokemon.name}">
+                </div>
+            </li>
+            `).join('')
+        pokemonList.innerHTML += newHtml
 
-PokeAPI.getPokemons().then( (pokemons = [])=>{
-    pokemonList.innerHTML+=pokemons.map(pokemonToLi).join('')
-    
-    })
+        })
+}    
+
+loadPokemonItems(offset,limit)
+loadButton.addEventListener("click",()=>{
+    offset += limit
+    const qtRecord = offset+limit
+
+    if (qtRecord >= maxRecords) {
+        const newLimit= maxRecords-offset
+        loadPokemonItems(offset,newLimit)
         
 
-
-function pokemonToLi(pokemon) {
-    return `
-    <li class="pokemon">
-        <span class ="number">#001</span>
-        <span class ="name">${pokemon.name}</span>
-
-        <div class="detail">
-            <ol class="types">
-                <li class="type">grass</li>
-                <li class="type">poison</li>
-
-            </ol>
-            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/1.svg" 
-            // alt="${pokemon.name}">
-        </div>
-    </li>
-    `
-}
-
-    // fetch(pokemonList.url)
-    // .finally(()=> console.log("Requisição concluida!"))
-    
-
+        loadButton.parentElement.removeChild(loadButton)
+    }
+    else{
+        loadPokemonItems(offset,limit)
+    }
+    })
